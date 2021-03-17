@@ -18,3 +18,17 @@ export const logOutUser = (content) => ({
   type: actions.LOG_OUT,
   payload: {},
 });
+
+export const updateUserProfile = (content) => ({
+  type: actions.UPDATE_PROFILE,
+  payload: {
+    content,
+  },
+});
+
+export const createGroup = (content) => ({
+  type: actions.CREATE_GROUP,
+  payload: {
+    content,
+  },
+});

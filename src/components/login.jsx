@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { connect } from "react-redux";
-import { Redirect } from "react-router";
 import { logInUser } from "../redux/actions/action-helper";
+import axios from "axios";
+import Home from "./home";
 
 class Login extends Component {
   state = {
@@ -18,9 +19,14 @@ class Login extends Component {
   };
   handleLogin = (e) => {
     e.preventDefault();
-    this.props.logInUser(this.state);
+    axios.post("http://localhost:8000/login", { ...this.state }).then((res) => {
+      console.log("repsonse data: ", res.data);
+      if (res.status === 200) {
+        this.props.logInUser(res.data[0]);
+      }
+    });
+
     this.setState({ email: "", password: "" });
-    <Redirect to="/home" />;
   };
   render() {
     let logInForm;
@@ -36,6 +42,7 @@ class Login extends Component {
             placeholder="jane@dow.com"
             onChange={(e) => this.handleEmail(e.target.value)}
             value={this.state.email}
+            required
           ></Form.Control>
         </Form.Group>
         <Form.Group>
@@ -44,6 +51,7 @@ class Login extends Component {
             onChange={(e) => this.handlePassword(e.target.value)}
             type="password"
             value={this.state.password}
+            required
           ></Form.Control>
         </Form.Group>
         <Button varient="primary" type="submit">
@@ -53,7 +61,7 @@ class Login extends Component {
     );
     return (
       <Container className="container w-25">
-        {this.props.isLoggedIn ? null : logInForm}
+        {this.props.isLoggedIn ? <Home /> : logInForm}
       </Container>
     );
   }

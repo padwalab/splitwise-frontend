@@ -7,6 +7,10 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "react-bootstrap";
+import { connect } from "react-redux";
+import { Redirect } from "react-router";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 
 function ButtonToggle() {
   const [radioValue, setRadioValue] = useState("1");
@@ -39,30 +43,47 @@ class DashBoard extends Component {
   state = {};
 
   render() {
-    return (
-      <Container fluid>
-        <Row className="m-2">
-          <Col xs={6}>Dashboard</Col>
+    let dashBoardView = (
+      <Container fluid className="border-bottom">
+        <Row className="border-bottom mx-auto m-2">
+          <Col className="float-left" xs={6}>
+            <h2 className="font-weight-light">Dashboard</h2>
+          </Col>
           <Col>
-            <Button>Add expense</Button>
-            <Button>Settle up</Button>
+            {/* <Button>Add expense</Button> */}
+            <Popup
+              trigger={<Button className="float-right">Settle up</Button>}
+              modal
+            >
+              <div>Popup content here !!</div>
+            </Popup>
           </Col>
         </Row>
-        <Row>
-          <Col>Total balance</Col>
-          <Col>you owe</Col>
-          <Col>you are owed</Col>
+        <Row className="border-bottom m-2">
+          <Col className="text-center border-right mx-auto m-2">
+            Total balance
+          </Col>
+          <Col className="text-center mx-auto m-2">you owe</Col>
+          <Col className="text-center border-left mx-auto m-2">
+            you are owed
+          </Col>
         </Row>
-        <Row>
-          <Col>YOU OWE</Col>
-          <Col>
+        <Row className="m-2">
+          <Col className="text-center mx-auto m-2">YOU OWE</Col>
+          <Col className="text-center mx-auto m-2">
             <ButtonToggle />
           </Col>
-          <Col>YOU ARE OWED</Col>
+          <Col className="text-center mx-auto m-2">YOU ARE OWED</Col>
         </Row>
       </Container>
+    );
+    return (
+      <React.Fragment>
+        {this.props.isLoggedIn ? dashBoardView : <Redirect to="/login" />}
+      </React.Fragment>
     );
   }
 }
 
-export default DashBoard;
+const mapStateToProps = (state) => state;
+export default connect(mapStateToProps, null)(DashBoard);

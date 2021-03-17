@@ -33,9 +33,18 @@ class NavBar extends Component {
       );
     } else {
       NavElems = (
-        <NavDropdown className="text-white m-2" title="Username">
-          <NavDropdown.Item>Your account</NavDropdown.Item>
-          <NavDropdown.Item>Create a group</NavDropdown.Item>
+        <NavDropdown
+          title={
+            <span className="text-white">{this.props.currentUser.name}</span>
+          }
+          className="text-white m-2"
+        >
+          <NavDropdown.Item>
+            <Link to="/profile">Your account</Link>
+          </NavDropdown.Item>
+          <NavDropdown.Item>
+            <Link to="/groups/new">Create a group</Link>
+          </NavDropdown.Item>
           <NavDropdown.Item>Fairness calculators</NavDropdown.Item>
           <NavDropdown.Item onClick={this.handleLogOut}>
             <Link to="/home">Log out</Link>
@@ -48,7 +57,9 @@ class NavBar extends Component {
       <Navbar bg="dark">
         <Container fluid className="w-75">
           <Navbar.Brand className="text-white font-weight-light">
-            <Link to="/home">Splitwise</Link>
+            <Link className="text-white" to="/home/dashboard">
+              Splitwise
+            </Link>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">

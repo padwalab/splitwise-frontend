@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import { connect } from "react-redux";
 import { signInUser } from "../redux/actions/action-helper";
+import axios from "axios";
+import { Redirect } from "react-router";
 class Signin extends Component {
   state = {
     name: "",
@@ -20,7 +22,16 @@ class Signin extends Component {
 
   handleSignInUser = (e) => {
     e.preventDefault();
-    this.props.signInUser(this.state);
+    axios
+      .post("http://localhost:8000/signin", { ...this.state })
+      .then((res) => {
+        console.log("repsonse data: ", res.data);
+        if (res.status === 200) {
+          this.props.signInUser(res.data);
+          <Redirect to="/home" />;
+        }
+      });
+
     this.setState({ name: "", email: "", password: "" });
   };
   render() {
