@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { Component, useState } from "react";
 import {
   Container,
@@ -40,8 +41,21 @@ function ButtonToggle() {
   );
 }
 class DashBoard extends Component {
-  state = {};
-
+  state = {
+    balance: 0,
+  };
+  componentDidMount() {
+    axios
+      .get(
+        `http://localhost:8000/api/user/${this.props.currentUser.id}/balance`
+      )
+      .then((res) => {
+        console.log(res);
+        this.setState({
+          balance: res.data,
+        });
+      });
+  }
   render() {
     let dashBoardView = (
       <Container fluid className="border-bottom">
@@ -61,11 +75,22 @@ class DashBoard extends Component {
         </Row>
         <Row className="border-bottom m-2">
           <Col className="text-center border-right mx-auto m-2">
-            Total balance
+            <Row className="justify-content-md-center">Total balance</Row>
+            <Row className="justify-content-md-center">
+              {"$" + this.state.balance}
+            </Row>
           </Col>
-          <Col className="text-center mx-auto m-2">you owe</Col>
+          <Col className="text-center mx-auto m-2">
+            <Row className="justify-content-md-center">you owe</Row>
+            <Row className="justify-content-md-center">
+              {this.state.balance > 0 ? "$0.00" : this.state.balance}
+            </Row>
+          </Col>
           <Col className="text-center border-left mx-auto m-2">
-            you are owed
+            <Row className="justify-content-md-center">you are owed</Row>
+            <Row className="justify-content-md-center">
+              {this.state.balance > 0 ? "$" + this.state.balance : "$0.00"}
+            </Row>
           </Col>
         </Row>
         <Row className="m-2">

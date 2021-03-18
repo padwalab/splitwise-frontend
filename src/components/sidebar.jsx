@@ -42,7 +42,7 @@ class SideBar extends Component {
           </Form>
         </Row>
         <Row className="border-bottom m-2">
-          <Link to="/home/activity">:= All Expenses</Link>
+          <Link to="/home/expenses/all">:= All Expenses</Link>
         </Row>
         <Row className="border-bottom m-2">
           <Col>Groups</Col>

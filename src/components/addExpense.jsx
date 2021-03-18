@@ -13,6 +13,7 @@ class AddExpense extends Component {
   handleSubmitExpense = (e) => {
     e.preventDefault();
     console.log("handling the add expesnse", this.props.currentUser.id);
+
     axios
       .post(`http://localhost:8000/api/groups/${this.props.groupId}/expense`, {
         ...this.state,
@@ -20,6 +21,57 @@ class AddExpense extends Component {
       .then((res) => {
         if (res.status === 201) {
           console.log("add expense successfull");
+          fetch(`http://localhost:8000/api/group/${this.props.groupId}/members`)
+            .then((res) => res.json())
+            .then((result) => {
+              console.log(result);
+              result.forEach((member) => {
+                if (member.userId === this.props.currentUser.id) {
+                  console.log(
+                    "adding expense as: memberid: ",
+                    member.userId,
+                    " amount: ",
+                    this.state.amount,
+                    " share: ",
+                    +(this.state.amount - this.state.amount / result.length)
+                  );
+                  axios
+                    .put("http://localhost:8000/api/expenses/add_share", {
+                      groupId: `${this.props.groupId}`,
+                      userId: `${member.userId}`,
+                      amount: +(
+                        this.state.amount -
+                        this.state.amount / result.length
+                      ),
+                    })
+                    .then((result) => {
+                      if (result.status === 200) {
+                        console.log("add share successful", result);
+                      }
+                    });
+                } else {
+                  console.log(
+                    "adding expense as: memberid: ",
+                    member.userId,
+                    " amount: ",
+                    this.state.amount,
+                    " share: ",
+                    -(this.state.amount / result.length)
+                  );
+                  axios
+                    .put("http://localhost:8000/api/expenses/add_share", {
+                      groupId: `${this.props.groupId}`,
+                      userId: `${member.userId}`,
+                      amount: -+(this.state.amount / result.length),
+                    })
+                    .then((result) => {
+                      if (result.status === 200) {
+                        console.log("add share successful", result);
+                      }
+                    });
+                }
+              });
+            });
         } else {
           console.log("add expense failed");
         }
@@ -34,7 +86,7 @@ class AddExpense extends Component {
   render() {
     return (
       <Container className="w-75" fluid>
-        <h2 className="border-bottom m-2">
+        <h2 className="font-weight-light border-bottom m-2">
           :::Add Expense::: {this.props.groupName.toUpperCase()}
         </h2>
         <Form onSubmit={(e) => this.handleSubmitExpense(e)}>

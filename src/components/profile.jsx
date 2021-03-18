@@ -57,7 +57,7 @@ class Profile extends Component {
   render() {
     let profile = (
       <React.Fragment>
-        <h1>Your Account</h1>
+        <h1 className="font-weight-light">Your Account</h1>
         <Form onSubmit={(e) => this.handleUpdateProfile(e)}>
           <Row className="border-bottom m-2">
             <Col className="m-2">

@@ -7,6 +7,7 @@ import RecentActivity from "./recentActivity";
 import SideBar from "./sidebar";
 import Login from "./login";
 import AddExpense from "./addExpense";
+import AllExpenses from "./allExpenses";
 import Group from "./group";
 
 class Home extends Component {
@@ -25,6 +26,7 @@ class Home extends Component {
           <Route path="/home/addExpense/:groupName/:id">
             <CreateExpense />
           </Route>
+          <Route path="/home/expenses/all" component={AllExpenses} />
         </Col>
       </Row>
     );

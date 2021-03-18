@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import Popup from "reactjs-popup";
 import Expense from "./expense";
+import MemberList from "./memberList";
 
 class Group extends Component {
   state = {
@@ -43,17 +44,17 @@ class Group extends Component {
     const { id, name, expenseItems, users } = this.state;
     const expenses = (
       <React.Fragment>
-        {expenseItems.map((item) => (
-          <Expense key={item.id} expenseItem={item} />
-        ))}
+        {expenseItems
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .map((item) => (
+            <Expense key={item.id} expenseItem={item} />
+          ))}
       </React.Fragment>
     );
     const members = (
       <React.Fragment>
         {users.map((item) => (
-          <Row className="border-bottom m-1" key={item.id}>
-            {item.name}
-          </Row>
+          <MemberList groupId={this.props.id} member={item} />
         ))}
       </React.Fragment>
     );
