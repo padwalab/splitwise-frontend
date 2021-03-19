@@ -19,7 +19,7 @@ export const logOutUser = (content) => ({
   payload: {},
 });
 
-export const updateUserProfile = (content) => ({
+export const updateUser = (content) => ({
   type: actions.UPDATE_PROFILE,
   payload: {
     content,

@@ -3,7 +3,8 @@ import { Button, Container, Form, Row, Col } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
 import axios from "axios";
-import { createGroup } from "../redux/actions/action-helper";
+import { createGroup, updateUser } from "../redux/actions/action-helper";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 class NewGroup extends Component {
   state = {
@@ -15,9 +16,25 @@ class NewGroup extends Component {
       },
     ],
   };
+  userNames = [];
+  selectedNames = [];
+  componentDidMount() {
+    fetch(`http://localhost:8000/api/userlist`)
+      .then((userLists) => userLists.json())
+      .then((userList) =>
+        userList.forEach((user) => {
+          this.userNames.push(user.name);
+        })
+      );
+    console.log(this.userNames, this.user);
+  }
 
   handleGroupName = (groupName) => {
     this.setState({ groupName });
+  };
+  handleUsers = (user) => {
+    this.selectedNames = [...this.selectedNames, user];
+    console.log(this.selectedNames);
   };
 
   handleCreateGroup = (e) => {
@@ -47,6 +64,11 @@ class NewGroup extends Component {
           this.props.createGroup({ ...groupres.data });
         }
       });
+    axios
+      .get(
+        `http://localhost:8000/api/users/get/${this.props.currentUser.email}`
+      )
+      .then((user) => this.props.updateUser({ ...user.data }));
     console.log(this.state);
   };
 
@@ -88,6 +110,19 @@ class NewGroup extends Component {
               ></Form.Control>
             </Col>
           </Row>
+          {/* <Row>
+            <Col>
+              <Typeahead
+                id="basic-typeahead-single"
+                labelKey="name"
+                single
+                onChange={(e) => this.handleUsers(e.target.value)}
+                options={this.userNames}
+                placeholder="Choose several Users..."
+                // selected={multiSelections}
+              />
+            </Col>
+          </Row> */}
         </Form.Group>
         <Button varient="primary" type="submit">
           Save
@@ -102,4 +137,4 @@ class NewGroup extends Component {
   }
 }
 const mapStateToProps = (state) => state;
-export default connect(mapStateToProps, { createGroup })(NewGroup);
+export default connect(mapStateToProps, { createGroup, updateUser })(NewGroup);

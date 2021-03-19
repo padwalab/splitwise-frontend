@@ -1,14 +1,15 @@
+import axios from "axios";
 import React, { Component } from "react";
 import { Col, Container, Row, Button } from "react-bootstrap";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Popup from "reactjs-popup";
 import Expense from "./expense";
 import MemberList from "./memberList";
 
 class Group extends Component {
   state = {
-    id: "",
+    id: 0,
     name: "",
     expenseItems: [],
     users: [],
@@ -40,6 +41,15 @@ class Group extends Component {
         );
     }
   }
+  exitGroup = (e) => {
+    e.preventDefault();
+    axios
+      .post(`http://localhost:8000/api/groups/${this.state.id}/exit`, {
+        userId: this.props.currentUser.id,
+      })
+      .then((result) => <Redirect to="/home/dashboard" />)
+      .catch((error) => console.log(error));
+  };
   render() {
     const { id, name, expenseItems, users } = this.state;
     const expenses = (
@@ -62,20 +72,35 @@ class Group extends Component {
       <Container fluid>
         <Col className="border-right">
           <Row className="border-bottom mx-auto m-2">
+            <Col xs={1}>
+              <Link to={`/home/groups/${name}/${id}/exit`}>
+                <Button
+                  variant="outline-danger"
+                  onClick={(e) => this.exitGroup(e)}
+                >
+                  Exit
+                </Button>
+              </Link>
+            </Col>
             <Col className="float-left" xs={5}>
               <h2 className="font-weight-light">{name.toUpperCase()}</h2>
             </Col>
             <Col>
               <Row className="float-right">
                 <Col>
-                  <Link to={`/home/addExpense/${name}/${id}`}>
-                    <Button>AddExpense</Button>
+                  <Link to={`/home/addMember/${name}/${id}`}>
+                    <Button variant="outline-primary">AddMember</Button>
                   </Link>
                 </Col>
                 <Col>
-                  <Popup trigger={<Button>Settle up</Button>} modal>
-                    <div>Popup content here !!</div>
-                  </Popup>
+                  <Link to={`/home/addExpense/${name}/${id}`}>
+                    <Button variant="outline-primary">AddExpense</Button>
+                  </Link>
+                </Col>
+                <Col>
+                  <Link to={`/home/settle/${name}/${id}`}>
+                    <Button variant="outline-primary">SettleUp</Button>
+                  </Link>
                 </Col>
               </Row>
             </Col>

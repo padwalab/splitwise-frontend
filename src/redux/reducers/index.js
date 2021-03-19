@@ -41,27 +41,11 @@ export default function rootReducer(state = InitialState, action) {
       };
     case actions.UPDATE_PROFILE:
       console.log("updating user profile...");
-      if (
-        action.payload.content.name === "" ||
-        action.payload.content.email === "" ||
-        action.payload.content.default_currency === "" ||
-        action.payload.content.time_zone === "" ||
-        action.payload.content.language === ""
-      ) {
-        return state;
-      }
-      let i = 0;
-      for (i = 0; i < state.users.length; i++) {
-        if (state.users[i].email === action.payload.content.email) {
-          state.users[i] = action.payload.content;
-          return {
-            ...state,
-            currentUser: state.users[i],
-            isLoggedIn: true,
-          };
-        }
-      }
-      return state;
+      return {
+        ...state,
+        currentUser: action.payload.content,
+        isLoggedIn: true,
+      };
     case actions.CREATE_GROUP:
       return {
         ...state,

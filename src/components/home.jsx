@@ -9,6 +9,9 @@ import Login from "./login";
 import AddExpense from "./addExpense";
 import AllExpenses from "./allExpenses";
 import Group from "./group";
+import AddMember from "./addMember";
+import GroupInvitations from "./groupInvitations";
+import SettleUp from "./settleUp";
 
 class Home extends Component {
   render() {
@@ -26,7 +29,14 @@ class Home extends Component {
           <Route path="/home/addExpense/:groupName/:id">
             <CreateExpense />
           </Route>
+          <Route path="/home/addMember/:groupName/:id">
+            <GroupAddMember />
+          </Route>
           <Route path="/home/expenses/all" component={AllExpenses} />
+          <Route path="/home/invitations" component={GroupInvitations} />
+          <Route path="/home/settle/:groupName/:id">
+            <SettleUpExpense />
+          </Route>
         </Col>
       </Row>
     );
@@ -48,4 +58,14 @@ export function CreateExpense() {
 export function GroupDetails() {
   let { id } = useParams();
   return <Group id={id} />;
+}
+
+export function GroupAddMember() {
+  let { groupName, id } = useParams();
+  return <AddMember groupId={id} groupName={groupName} />;
+}
+
+export function SettleUpExpense() {
+  let { groupName, id } = useParams();
+  return <SettleUp groupId={id} groupName={groupName} />;
 }

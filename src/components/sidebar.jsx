@@ -13,14 +13,38 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
 class SideBar extends Component {
+  state = {
+    groups: [],
+    filterText: "",
+  };
+  componentDidMount() {
+    fetch(`http://localhost:8000/api/groups/${this.props.currentUser.id}`)
+      .then((res) => res.json())
+      .then((result) => this.setState({ groups: result }));
+    console.log(this.state.expenses);
+  }
+
+  handleFilterText = (filterText) => {
+    this.setState({ filterText });
+  };
   render() {
     const groupsa = (
       <React.Fragment>
-        {this.props.currentUser.groups.map((item) => (
-          <Row className="border-bottom m-1 " key={item.id}>
-            <Link to={`/home/group/${item.id}`}>{item.name.toUpperCase()}</Link>
-          </Row>
-        ))}
+        {this.state.groups
+          .filter(
+            (item) =>
+              item.name
+                .toLowerCase()
+                .indexOf(this.state.filterText.toLowerCase()) === 0 ||
+              this.state.filterText === ""
+          )
+          .map((item) => (
+            <Row className="border-bottom m-1 " key={item.id}>
+              <Link to={`/home/group/${item.id}`}>
+                {item.name.toUpperCase()}
+              </Link>
+            </Row>
+          ))}
       </React.Fragment>
     );
     return (
@@ -32,12 +56,20 @@ class SideBar extends Component {
           <Link to="/home/activity">Recent Activity</Link>
         </Row>
         <Row className="border-bottom m-2">
+          <Link to="/home/invitations">Group Invitations</Link>
+        </Row>
+        <Row className="border-bottom m-2">
           <Form inline>
             <InputGroup size="sm">
               <InputGroup.Prepend>
                 <InputGroup.Text id="search-thumb">~</InputGroup.Text>
               </InputGroup.Prepend>
-              <FormControl placeholder="Filter by name" aria-label="Username" />
+              <FormControl
+                placeholder="Filter by name"
+                aria-label="filterText"
+                value={this.state.filterText}
+                onChange={(e) => this.handleFilterText(e.target.value)}
+              />
             </InputGroup>
           </Form>
         </Row>

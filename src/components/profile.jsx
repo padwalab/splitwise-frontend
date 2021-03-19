@@ -2,37 +2,43 @@ import React, { Component } from "react";
 import { Col, Container, Form, Row, Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
-import { updateUserProfile } from "../redux/actions/action-helper";
+import { updateUser } from "../redux/actions/action-helper";
+import axios from "axios";
 class Profile extends Component {
   state = {
     name: this.props.currentUser.name,
     email: this.props.currentUser.email,
     password: this.props.currentUser.password,
-    // new_password: "",
+    profile_photo: this.props.currentUser.profile_photo,
     phone: this.props.currentUser.phone,
     default_currency: this.props.currentUser.default_currency,
     time_zone: this.props.currentUser.time_zome,
     language: this.props.currentUser.language,
   };
+
+  componentDidMount() {}
   fileInput = React.createRef();
-  addFile = (e) => {
-    console.log(e.target.value);
+  addFile = (image) => {
+    console.log(image.name);
+    if (image.size > 0.5e6) {
+      console.log("file too large");
+    } else {
+      this.setState({ profile_photo: image.name });
+    }
   };
   handleName = (name) => {
     this.setState({ name });
   };
-  handleEmail = (email) => {
-    this.setState({ email });
-  };
+  // handleEmail = (email) => {
+  //   this.setState({ email });
+  // };
   handlePhone = (phone) => {
     this.setState({ phone });
   };
   handlePassword = (password) => {
     this.setState({ password });
   };
-  //   handleNewPassword = (new_password) => {
-  //     this.setState({ new_password });
-  //   };
+
   handleCurrency = (default_currency) => {
     this.setState({ default_currency });
   };
@@ -44,15 +50,16 @@ class Profile extends Component {
   };
   handleUpdateProfile = (e) => {
     e.preventDefault();
-    this.props.updateUserProfile(this.state);
-    // this.setState({
-    //   name: this.props.currentUser.name,
-    //   email: this.props.currentUser.email,
-    //   password: this.props.currentUser.password,
-    //   phone_number: this.props.currentUser.phone_number,
-    //   default_currency: this.props.currentUser.default_currency,
-    //   time_zone: this.props.currentUser.time_zone,
-    // });
+    let cloneState = Object.assign({}, this.state);
+    delete cloneState.email;
+    axios
+      .put(`http://localhost:8000/api/user/${this.state.email}`, {
+        ...cloneState,
+      })
+      .then((res) => {
+        console.log("repsonse data: ", res.data);
+      })
+      .catch((error) => console.log(error));
   };
   render() {
     let profile = (
@@ -61,9 +68,13 @@ class Profile extends Component {
         <Form onSubmit={(e) => this.handleUpdateProfile(e)}>
           <Row className="border-bottom m-2">
             <Col className="m-2">
-              <Row className="m-2">
+              <Row className="m-2" xs={2}>
                 <img
-                  src="https://s3.amazonaws.com/splitwise/uploads/user/default_avatars/avatar-blue45-200px.png"
+                  src={
+                    this.state.profile_photo !== null
+                      ? "./images/" + this.state.profile_photo
+                      : "./images/0.png"
+                  }
                   alt="ProfilePhotoofUser"
                 />
               </Row>
@@ -72,10 +83,7 @@ class Profile extends Component {
                 <Form.Control
                   type="file"
                   accept=".png"
-                  onChange={(e) => {
-                    e.preventDefault();
-                    this.addfile(e.target.value);
-                  }}
+                  onChange={(e) => this.addFile(e.target.files[0])}
                 />
               </Row>
             </Col>
@@ -95,8 +103,9 @@ class Profile extends Component {
                 <Form.Control
                   key="email"
                   type="text"
-                  placeholder={this.state.email}
-                  onChange={(e) => this.handleEmail(e.target.value)}
+                  value={this.state.email}
+                  // onChange={(e) => this.handleEmail(e.target.value)}
+                  readOnly
                 />
               </Row>
               <Row></Row>
@@ -110,21 +119,6 @@ class Profile extends Component {
                 />
               </Row>
               <Row></Row>
-              {/* <Row>Your password</Row>
-              <Row>
-                <Form.Control
-                  key="password"
-                  type="password"
-                  placeholder={this.state.password}
-                  onChange={(e) => this.handlePassword(e.target.value)}
-                />
-                <Form.Control
-                  key="newpassword"
-                  type="password"
-                  placeholder={this.state.new_password}
-                  onChange={(e) => this.handleNewPassword(e.target.value)}
-                />
-              </Row> */}
             </Col>
             <Col>
               <Row className="m-2">Your default currency</Row>
@@ -175,4 +169,4 @@ class Profile extends Component {
   }
 }
 const mapStateToProps = (state) => state;
-export default connect(mapStateToProps, { updateUserProfile })(Profile);
+export default connect(mapStateToProps, { updateUser })(Profile);
