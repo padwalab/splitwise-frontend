@@ -1,12 +1,14 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, Alert } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { connect } from "react-redux";
 
 class AddMember extends Component {
   state = {
     name: "",
+    success: false,
+    warning: false,
   };
   //  [singleSelections, setSingleSelections] = useState([]);
 
@@ -20,8 +22,8 @@ class AddMember extends Component {
           userId: this.state.name.split("::")[2],
         }
       )
-      .then((result) => console.log(result.data))
-      .catch((error) => console.log(error));
+      .then((result) => this.setState({ success: true }))
+      .catch((error) => this.setState({ warning: true }));
   };
   userNames = [];
   componentDidMount() {
@@ -40,6 +42,12 @@ class AddMember extends Component {
         <h2 className="font-weight-light border-bottom m-2">
           :::Add Member::: {this.props.groupName.toUpperCase()}
         </h2>
+        {this.state.warning ? (
+          <Alert variant="danger">Failed to add member.</Alert>
+        ) : null}
+        {this.state.success ? (
+          <Alert variant="success">Add member successfull.</Alert>
+        ) : null}
         <Form onSubmit={(e) => this.handleAddMember(e)}>
           <Form.Group controlId="formMemberName">
             <Form.Label>Member name</Form.Label>

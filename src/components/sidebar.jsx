@@ -53,7 +53,7 @@ class SideBar extends Component {
           <Link to="/home/dashboard">Dashboard</Link>
         </Row>
         <Row className="border-bottom m-2">
-          <Link to="/home/activity">Recent Activity</Link>
+          <Link to="/home/expenses/all">Recent Activity</Link>
         </Row>
         <Row className="border-bottom m-2">
           <Link to="/home/invitations">Group Invitations</Link>

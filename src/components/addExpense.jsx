@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
 
 class AddExpense extends Component {
@@ -9,6 +9,8 @@ class AddExpense extends Component {
     name: "",
     amount: 0,
     reciept: "",
+    success: false,
+    warning: false,
   };
   handleSubmitExpense = (e) => {
     e.preventDefault();
@@ -66,7 +68,7 @@ class AddExpense extends Component {
                     })
                     .then((result) => {
                       if (result.status === 200) {
-                        console.log("add share successful", result);
+                        this.setState({ success: true });
                       }
                     });
                 }
@@ -74,6 +76,7 @@ class AddExpense extends Component {
             });
         } else {
           console.log("add expense failed");
+          this.setState({ warning: true });
         }
       });
   };
@@ -89,6 +92,12 @@ class AddExpense extends Component {
         <h2 className="font-weight-light border-bottom m-2">
           :::Add Expense::: {this.props.groupName.toUpperCase()}
         </h2>
+        {this.state.warning ? (
+          <Alert variant="danger">Failed to add expense.</Alert>
+        ) : null}
+        {this.state.success ? (
+          <Alert variant="success">Add expense successfull.</Alert>
+        ) : null}
         <Form onSubmit={(e) => this.handleSubmitExpense(e)}>
           <Form.Group controlId="formExpenseName">
             <Form.Label>Description</Form.Label>

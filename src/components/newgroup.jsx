@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Container, Form, Row, Col } from "react-bootstrap";
+import { Button, Container, Form, Row, Col, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
 import axios from "axios";
@@ -15,6 +15,8 @@ class NewGroup extends Component {
         email: this.props.currentUser.email,
       },
     ],
+    success: false,
+    warning: false,
   };
   userNames = [];
   selectedNames = [];
@@ -68,7 +70,14 @@ class NewGroup extends Component {
       .get(
         `http://localhost:8000/api/users/get/${this.props.currentUser.email}`
       )
-      .then((user) => this.props.updateUser({ ...user.data }));
+      .then((user) => {
+        this.setState({ success: true });
+        this.props.updateUser({ ...user.data });
+        <Redirect to="/home/dashboard" />;
+      })
+      .catch((error) => {
+        this.setState({ warning: true });
+      });
     console.log(this.state);
   };
 
@@ -131,6 +140,12 @@ class NewGroup extends Component {
     );
     return (
       <Container fluid className="w-25">
+        {this.state.warning ? (
+          <Alert variant="danger">Failed to create group.</Alert>
+        ) : null}
+        {this.state.success ? (
+          <Alert variant="success">Create group successfull.</Alert>
+        ) : null}
         {this.props.isLoggedIn ? createGroupForm : <Redirect to="/login" />}
       </Container>
     );

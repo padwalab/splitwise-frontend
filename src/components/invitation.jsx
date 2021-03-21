@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Col, Container, Row, Button, Form } from "react-bootstrap";
+import { Col, Container, Row, Button, Form, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
 
 class Invitation extends Component {
@@ -8,6 +8,8 @@ class Invitation extends Component {
     groupId: this.props.groupId,
     userId: this.props.currentUser.id,
     groupName: "",
+    success: false,
+    warning: false,
   };
   componentDidMount() {
     axios
@@ -23,6 +25,7 @@ class Invitation extends Component {
       .then((res) => {
         if (res.status === 200) {
           console.log("invitation accepted");
+          this.setState({ success: true });
         } else {
           console.log("Invite accept failed");
         }
@@ -31,11 +34,19 @@ class Invitation extends Component {
   render() {
     return (
       <Container>
+        {this.state.warning ? (
+          <Alert variant="danger">Failed to accept invitation.</Alert>
+        ) : null}
+        {this.state.success ? (
+          <Alert variant="success">Accept invitation successfull.</Alert>
+        ) : null}
         Invitition for {this.props.currentUser.id}
         <Row className="border-bottom m-2">
-          <Col xs={8}>{this.state.groupName}</Col>
+          <Col xs={7}>{this.state.groupName}</Col>
           <Col>
-            <Button onClick={(e) => this.handleAcceptInvitation(e)}></Button>
+            <Button size="sm" onClick={(e) => this.handleAcceptInvitation(e)}>
+              Accept
+            </Button>
           </Col>
         </Row>
       </Container>

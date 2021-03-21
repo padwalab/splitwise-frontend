@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import { Col, Container, Row, Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
-import Popup from "reactjs-popup";
 import Expense from "./expense";
 import MemberList from "./memberList";
 
@@ -13,18 +12,25 @@ class Group extends Component {
     name: "",
     expenseItems: [],
     users: [],
+    balance: 0,
   };
   componentDidMount() {
     fetch(`http://localhost:8000/api/group/${this.props.id}`)
       .then((res) => res.json())
-      .then((result) =>
+      .then((result) => {
         this.setState({
           id: result.id,
           name: result.name,
           expenseItems: result.expenseItems,
           users: result.users,
-        })
-      );
+        });
+        axios
+          .post(`http://localhost:8000/api/groups/userbalance`, {
+            userId: this.props.currentUser.id,
+            groupId: this.state.id,
+          })
+          .then((result) => this.setState({ balance: result.data.share }));
+      });
   }
 
   componentDidUpdate(prevProps) {
@@ -77,6 +83,7 @@ class Group extends Component {
                 <Button
                   variant="outline-danger"
                   onClick={(e) => this.exitGroup(e)}
+                  disabled={this.state.balance !== 0 ? true : false}
                 >
                   Exit
                 </Button>
