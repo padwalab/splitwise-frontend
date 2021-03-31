@@ -58,15 +58,18 @@ class Group extends Component {
   };
   render() {
     const { id, name, expenseItems, users } = this.state;
-    const expenses = (
-      <React.Fragment>
-        {expenseItems
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .map((item) => (
-            <Expense key={item.id} expenseItem={item} />
-          ))}
-      </React.Fragment>
-    );
+    const expenses =
+      expenseItems.length > 0 ? (
+        <React.Fragment>
+          {expenseItems
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map((item) => (
+              <Expense key={item.id} expenseItem={item} />
+            ))}
+        </React.Fragment>
+      ) : (
+        <h3>No recent expenses!!</h3>
+      );
     const members = (
       <React.Fragment>
         {users.map((item) => (

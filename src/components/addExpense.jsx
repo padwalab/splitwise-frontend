@@ -106,6 +106,7 @@ class AddExpense extends Component {
               placeholder="Description"
               value={this.state.name}
               onChange={(e) => this.handleDescription(e.target.value)}
+              required
             />
           </Form.Group>
 
@@ -116,6 +117,7 @@ class AddExpense extends Component {
               placeholder="0.00"
               value={this.state.amount}
               onChange={(e) => this.handleAmount(e.target.value)}
+              required
             />
           </Form.Group>
           <Button variant="primary" type="submit">

@@ -65,6 +65,7 @@ class AddMember extends Component {
               options={this.userNames}
               placeholder="Choose several Users..."
               //   selected={this.state.name}
+              required
             />
           </Form.Group>
 

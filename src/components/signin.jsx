@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Button, Container } from "react-bootstrap";
+import { Form, Button, Container, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
 import { signInUser } from "../redux/actions/action-helper";
 import axios from "axios";
@@ -9,6 +9,8 @@ class Signin extends Component {
     name: "",
     email: "",
     password: "",
+    warning: false,
+    success: false,
   };
   handleName = (name) => {
     this.setState({ name });
@@ -28,16 +30,24 @@ class Signin extends Component {
         console.log("repsonse data: ", res.data);
         if (res.status === 200) {
           this.props.signInUser(res.data);
+          this.setState({ success: true });
           <Redirect to="/home" />;
         }
-      });
+      })
+      .catch((error) => this.setState({ warning: true }));
 
-    this.setState({ name: "", email: "", password: "" });
+    this.setState({ name: "", email: "", password: "", success: true });
   };
   render() {
     let signInForm;
     signInForm = (
       <Form onSubmit={this.handleSignInUser}>
+        {this.state.warning ? (
+          <Alert variant="danger">Sign in failed</Alert>
+        ) : null}
+        {this.state.success ? (
+          <Alert variant="success">Sign up Success</Alert>
+        ) : null}
         <Form.Label className="font-weight-bold mx-auto">
           INTRODUCE YOURSELF
         </Form.Label>

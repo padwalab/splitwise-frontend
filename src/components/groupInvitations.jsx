@@ -23,7 +23,7 @@ class GroupInvitations extends Component {
     const invites = (
       <React.Fragment>
         {this.state.invitations.map((item) => (
-          <Invitation groupId={item.groupId} />
+          <Invitation key={item.groupId} groupId={item.groupId} />
         ))}
       </React.Fragment>
     );
