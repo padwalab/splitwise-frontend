@@ -15,8 +15,49 @@ const InitialState = {
   isLoggedIn: false,
   currentUser: {},
 };
+function initState() {
+  try {
+    const serializedState = localStorage.getItem("state");
+    if (serializedState === null) {
+      return {
+        users: [
+          {
+            name: "abhijeet",
+            email: "a@g.com",
+            password: "a",
+            phone_number: "",
+            default_currency: "INR",
+            time_zone: "PT",
+            language: "English",
+          },
+        ],
+        groups: [],
+        isLoggedIn: false,
+        currentUser: {},
+      };
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    return {
+      users: [
+        {
+          name: "abhijeet",
+          email: "a@g.com",
+          password: "a",
+          phone_number: "",
+          default_currency: "INR",
+          time_zone: "PT",
+          language: "English",
+        },
+      ],
+      groups: [],
+      isLoggedIn: false,
+      currentUser: {},
+    };
+  }
+}
 
-export default function rootReducer(state = InitialState, action) {
+export default function rootReducer(state = initState(), action) {
   switch (action.type) {
     case actions.SIGN_IN:
       return {
@@ -27,12 +68,32 @@ export default function rootReducer(state = InitialState, action) {
       };
 
     case actions.LOG_IN:
+      try {
+        const serializedState = JSON.stringify({
+          ...state,
+          currentUser: action.payload.content,
+          isLoggedIn: true,
+        });
+        localStorage.setItem("state", serializedState);
+      } catch {
+        // ignore write errors
+      }
       return {
         ...state,
         currentUser: action.payload.content,
         isLoggedIn: true,
       };
     case actions.LOG_OUT:
+      try {
+        const serializedState = JSON.stringify({
+          ...state,
+          currentUser: {},
+          isLoggedIn: false,
+        });
+        localStorage.setItem("state", serializedState);
+      } catch {
+        // ignore write errors
+      }
       console.log("logging the user out...");
       return {
         ...state,
@@ -40,6 +101,16 @@ export default function rootReducer(state = InitialState, action) {
         isLoggedIn: false,
       };
     case actions.UPDATE_PROFILE:
+      try {
+        const serializedState = JSON.stringify({
+          ...state,
+          currentUser: action.payload.content,
+          isLoggedIn: true,
+        });
+        localStorage.setItem("state", serializedState);
+      } catch {
+        // ignore write errors
+      }
       console.log("updating user profile...");
       return {
         ...state,
@@ -47,9 +118,18 @@ export default function rootReducer(state = InitialState, action) {
         isLoggedIn: true,
       };
     case actions.CREATE_GROUP:
+      try {
+        const serializedState = JSON.stringify({
+          ...state,
+          groups: action.payload.content.groups,
+        });
+        localStorage.setItem("state", serializedState);
+      } catch {
+        // ignore write errors
+      }
       return {
         ...state,
-        groups: [...state.groups, action.payload.content],
+        groups: action.payload.content.groups,
       };
 
     default:

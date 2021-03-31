@@ -35,7 +35,9 @@ class SettleUp extends Component {
     axios
       .post(`http://localhost:8000/api/groups/${this.props.groupId}/settleup`, {
         userId: this.props.currentUser.id,
+        payeeName: this.props.currentUser.name,
         memberId: memberId,
+        payerName: this.state.member.split("::")[1],
         amount: this.state.amount,
       })
       .then((result) => {

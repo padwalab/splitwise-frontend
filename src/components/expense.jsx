@@ -7,13 +7,15 @@ class Expense extends Component {
   };
 
   componentDidMount() {
-    if (this.props.expenseItem.createdBy !== null) {
+    if (this.props.expenseItem.createdBy !== undefined) {
       fetch(
         `http://localhost:8000/api/user/${this.props.expenseItem.createdBy}`
       )
         .then((res) => res.json())
         .then((result) => this.setState({ name: result.name }))
         .catch((error) => this.setState({ name: "NA" }));
+    } else {
+      this.setState({ name: this.props.expenseItem.payeeName });
     }
   }
 

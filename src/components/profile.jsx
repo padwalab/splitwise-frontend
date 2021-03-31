@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router";
 import { updateUser } from "../redux/actions/action-helper";
 import axios from "axios";
+import { Alert } from "react-bootstrap";
 class Profile extends Component {
   state = {
     name: this.props.currentUser.name,
@@ -14,6 +15,8 @@ class Profile extends Component {
     default_currency: this.props.currentUser.default_currency,
     time_zone: this.props.currentUser.time_zome,
     language: this.props.currentUser.language,
+    success: false,
+    warning: false,
   };
 
   componentDidMount() {}
@@ -52,19 +55,32 @@ class Profile extends Component {
     e.preventDefault();
     let cloneState = Object.assign({}, this.state);
     delete cloneState.email;
+    delete cloneState.success;
+    delete cloneState.warning;
     axios
       .put(`http://localhost:8000/api/user/${this.state.email}`, {
         ...cloneState,
       })
       .then((res) => {
         console.log("repsonse data: ", res.data);
+        this.setState({ success: true });
+        this.props.updateUser(res.data[1]);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        this.setState({ warning: true });
+      });
   };
   render() {
     let profile = (
       <React.Fragment>
         <h1 className="font-weight-light">Your Account</h1>
+        {this.state.warning ? (
+          <Alert variant="danger">Failed to Update profile.</Alert>
+        ) : null}
+        {this.state.success ? (
+          <Alert variant="success">Successfull.</Alert>
+        ) : null}
         <Form onSubmit={(e) => this.handleUpdateProfile(e)}>
           <Row className="border-bottom m-2">
             <Col className="m-2">
