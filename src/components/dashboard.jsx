@@ -46,14 +46,19 @@ class DashBoard extends Component {
   };
   componentDidMount() {
     axios
-      .get(
-        `http://localhost:8000/api/user/${this.props.currentUser.id}/balance`
-      )
+      .get(`http://localhost:8000/users/${this.props.currentUser.id}/groups`)
       .then((res) => {
         console.log(res);
-        this.setState({
-          balance: res.data,
+        res.data.groups.forEach((group) => {
+          group.members.forEach((member) => {
+            member.member === this.props.currentUser.id
+              ? this.setState({ balance: this.state.balance + member.share })
+              : this.setState({ balance: this.state.balance });
+          });
         });
+        // this.setState({
+        //   balance: res.data,
+        // });
       });
   }
   render() {
@@ -77,18 +82,20 @@ class DashBoard extends Component {
           <Col className="text-center border-right mx-auto m-2">
             <Row className="justify-content-md-center">Total balance</Row>
             <Row className="justify-content-md-center">
-              {"$" + this.state.balance}
+              {this.state.balance > 0
+                ? "$" + this.state.balance
+                : "- $" + -this.state.balance}
             </Row>
           </Col>
           <Col className="text-center mx-auto m-2">
             <Row className="justify-content-md-center">you owe</Row>
-            <Row className="justify-content-md-center">
-              {this.state.balance > 0 ? "$0.00" : this.state.balance}
+            <Row className="justify-content-md-center text-danger">
+              {this.state.balance > 0 ? "$0.00" : "$" + -this.state.balance}
             </Row>
           </Col>
           <Col className="text-center border-left mx-auto m-2">
             <Row className="justify-content-md-center">you are owed</Row>
-            <Row className="justify-content-md-center">
+            <Row className="justify-content-md-center text-success">
               {this.state.balance > 0 ? "$" + this.state.balance : "$0.00"}
             </Row>
           </Col>

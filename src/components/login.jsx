@@ -23,11 +23,11 @@ class Login extends Component {
   handleLogin = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8000/login", { ...this.state })
+      .post("http://localhost:8000/users/login", { ...this.state }) //done
       .then((res) => {
         console.log("repsonse data: ", res.data);
         if (res.status === 200) {
-          this.props.logInUser(res.data[0]);
+          this.props.logInUser(res.data);
         }
       })
       .catch((error) => this.setState({ warning: true }));

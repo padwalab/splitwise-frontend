@@ -17,34 +17,42 @@ class AddExpense extends Component {
     console.log("handling the add expesnse", this.props.currentUser.id);
 
     axios
-      .post(`http://localhost:8000/api/groups/${this.props.groupId}/expense`, {
+      .post(`http://localhost:8000/expense/${this.props.groupId}/add`, {
+        //done
         ...this.state,
       })
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           console.log("add expense successfull");
-          fetch(`http://localhost:8000/api/group/${this.props.groupId}/members`)
+          fetch(`http://localhost:8000/groups/${this.props.groupId}/members`) // done
             .then((res) => res.json())
             .then((result) => {
-              console.log(result);
-              result.forEach((member) => {
-                if (member.userId === this.props.currentUser.id) {
+              console.log(result.members.length);
+              result.members.forEach((member) => {
+                if (member.member === this.props.currentUser.id) {
                   console.log(
                     "adding expense as: memberid: ",
-                    member.userId,
+                    member.id,
+                    " User id: ",
+                    member.member,
                     " amount: ",
                     this.state.amount,
                     " share: ",
-                    +(this.state.amount - this.state.amount / result.length)
+                    +(
+                      this.state.amount -
+                      this.state.amount / result.members.length
+                    )
+                  );
+                  let share = +(
+                    this.state.amount -
+                    this.state.amount / result.members.length
                   );
                   axios
-                    .put("http://localhost:8000/api/expenses/add_share", {
-                      groupId: `${this.props.groupId}`,
-                      userId: `${member.userId}`,
-                      amount: +(
-                        this.state.amount -
-                        this.state.amount / result.length
-                      ),
+                    .post(`http://localhost:8000/membership/${member.id}/add`, {
+                      //done
+                      // groupId: `${this.props.groupId}`,
+                      // userId: `${member.userId}`,
+                      share: share === 0 ? 0 : share,
                     })
                     .then((result) => {
                       if (result.status === 200) {
@@ -54,17 +62,18 @@ class AddExpense extends Component {
                 } else {
                   console.log(
                     "adding expense as: memberid: ",
-                    member.userId,
+                    member.id,
+                    " User id: ",
+                    member.member,
                     " amount: ",
                     this.state.amount,
                     " share: ",
-                    -(this.state.amount / result.length)
+                    -(this.state.amount / result.members.length)
                   );
                   axios
-                    .put("http://localhost:8000/api/expenses/add_share", {
-                      groupId: `${this.props.groupId}`,
-                      userId: `${member.userId}`,
-                      amount: -+(this.state.amount / result.length),
+                    .post(`http://localhost:8000/membership/${member.id}/add`, {
+                      //done
+                      share: -+(this.state.amount / result.members.length),
                     })
                     .then((result) => {
                       if (result.status === 200) {

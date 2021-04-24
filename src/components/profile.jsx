@@ -58,13 +58,14 @@ class Profile extends Component {
     delete cloneState.success;
     delete cloneState.warning;
     axios
-      .put(`http://localhost:8000/api/user/${this.state.email}`, {
+      .put(`http://localhost:8000/users/${this.state.email}/update`, {
+        //done
         ...cloneState,
       })
       .then((res) => {
         console.log("repsonse data: ", res.data);
         this.setState({ success: true });
-        this.props.updateUser(res.data[1]);
+        this.props.updateUser(res.data);
       })
       .catch((error) => {
         console.log(error);

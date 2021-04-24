@@ -9,11 +9,13 @@ class MemberList extends Component {
   };
   componentDidMount() {
     axios
-      .post(`http://localhost:8000/api/groups/userbalance`, {
-        userId: this.props.member.id,
-        groupId: this.props.groupId,
-      })
-      .then((result) => this.setState({ balance: result.data.share }));
+      .get(`http://localhost:8000/membership/${this.props.member.id}/balance`) //done
+      .then((result) =>
+        this.setState({
+          userName: result.data.member.name,
+          balance: result.data.share,
+        })
+      );
   }
   componentDidUpdate(prevProps) {
     if (
@@ -21,22 +23,24 @@ class MemberList extends Component {
       this.props.member.id !== prevProps.member.id
     )
       axios
-        .post(`http://localhost:8000/api/groups/userbalance`, {
-          userId: this.props.member.id,
-          groupId: this.props.groupId,
-        })
-        .then((result) => this.setState({ balance: result.data.share }));
+        .get(`http://localhost:8000/membership/${this.props.member.id}/balance`) //done
+        .then((result) =>
+          this.setState({
+            userName: result.data.member.name,
+            balance: result.data.share,
+          })
+        );
   }
 
   render() {
     return (
-      <Container>
-        <Row key={this.props.member.id}>{this.props.member.name}</Row>
+      <Container fluid>
+        <Row key={this.props.member.id}>{this.state.userName}</Row>
         <React.Fragment>
           {this.state.balance > 0 ? (
-            <Row>gets back {this.state.balance}</Row>
+            <Row className="text-success">gets back {this.state.balance}</Row>
           ) : (
-            <Row>owes {this.state.balance}</Row>
+            <Row className="text-danger">owes {this.state.balance}</Row>
           )}
         </React.Fragment>
       </Container>

@@ -25,7 +25,7 @@ class Signin extends Component {
   handleSignInUser = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8000/signin", { ...this.state })
+      .post("http://localhost:8000/users/signin", { ...this.state }) //done
       .then((res) => {
         console.log("repsonse data: ", res.data);
         if (res.status === 200) {

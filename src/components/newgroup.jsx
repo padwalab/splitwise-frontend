@@ -42,20 +42,24 @@ class NewGroup extends Component {
   handleCreateGroup = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8000/api/groups", { name: this.state.groupName })
+      .post("http://localhost:8000/groups", {
+        //done
+        name: this.state.groupName,
+        userId: this.props.currentUser.id,
+      })
       .then((groupres) => {
         console.log("repsonse data: ", groupres.data);
         if (groupres.status === 201) {
           this.state.members.forEach((member) =>
             axios
-              .get(`http://localhost:8000/api/users/${member.email}`)
+              .get(`http://localhost:8000/users/${member.email}/getId`) // this api is done
               .then((memberres) => {
                 if (memberres.status === 200) {
                   console.log(memberres.data);
                   axios
                     .post(
-                      `http://localhost:8000/api/groups/${groupres.data.id}/add`,
-                      { userId: memberres.data.id }
+                      `http://localhost:8000/users/${groupres.data.id}/invite`, // done
+                      { email: memberres.data.email }
                     )
                     .then((res) => {
                       console.log(res);
@@ -66,9 +70,10 @@ class NewGroup extends Component {
           this.props.createGroup({ ...groupres.data });
         }
       });
+    // this v api is done
     axios
       .get(
-        `http://localhost:8000/api/users/get/${this.props.currentUser.email}`
+        `http://localhost:8000/users/${this.props.currentUser.email}/details` // this is done
       )
       .then((user) => {
         this.setState({ success: true });

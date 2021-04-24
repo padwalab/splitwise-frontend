@@ -13,36 +13,43 @@ class Group extends Component {
     expenseItems: [],
     users: [],
     balance: 0,
+    membershipId: "",
   };
   componentDidMount() {
-    fetch(`http://localhost:8000/api/group/${this.props.id}`)
+    fetch(`http://localhost:8000/groups/${this.props.id}`) //done
       .then((res) => res.json())
       .then((result) => {
         this.setState({
           id: result.id,
           name: result.name,
-          expenseItems: result.expenseItems,
-          users: result.users,
+          expenseItems: result.expenses,
+          users: result.members, // users: result.users,
         });
-        axios
-          .post(`http://localhost:8000/api/groups/userbalance`, {
-            userId: this.props.currentUser.id,
-            groupId: this.state.id,
-          })
-          .then((result) => this.setState({ balance: result.data.share }));
+        this.state.users.forEach((item) =>
+          item.member === this.props.currentUser.id
+            ? this.setState({ balance: item.share, membershipId: item.id })
+            : this.setState({ balance: this.state.balance })
+        );
+        console.log(this.state);
+        // axios
+        //   .post(`http://localhost:8000/api/groups/userbalance`, {
+        //     userId: this.props.currentUser.id,
+        //     groupId: this.state.id,
+        //   })
+        //   .then((result) => this.setState({ balance: result.data.share }));
       });
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.id !== prevProps.id) {
-      fetch(`http://localhost:8000/api/group/${this.props.id}`)
+      fetch(`http://localhost:8000/groups/${this.props.id}`) // done
         .then((res) => res.json())
         .then((result) =>
           this.setState({
             id: result.id,
             name: result.name,
-            expenseItems: result.expenseItems,
-            users: result.users,
+            expenseItems: result.expenses,
+            users: result.members,
           })
         );
     }
@@ -50,32 +57,35 @@ class Group extends Component {
   exitGroup = (e) => {
     e.preventDefault();
     axios
-      .post(`http://localhost:8000/api/groups/${this.state.id}/exit`, {
+      .put(`http://localhost:8000/membership/${this.state.membershipId}/exit`, {
+        //done
         userId: this.props.currentUser.id,
+        groupId: this.state.id,
       })
       .then((result) => <Redirect to="/home/dashboard" />)
       .catch((error) => console.log(error));
   };
   render() {
-    const { id, name, expenseItems, users } = this.state;
-    const expenses =
-      expenseItems.length > 0 ? (
-        <React.Fragment>
-          {expenseItems
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .map((item) => (
-              <Expense key={item.id} expenseItem={item} />
-            ))}
-        </React.Fragment>
-      ) : (
-        <h3>No recent expenses!!</h3>
-      );
-    const members = (
+    const { id, name, expenseItems, users, membershipId } = this.state;
+    const expenses = expenseItems ? (
+      <React.Fragment>
+        {expenseItems
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .map((item) => (
+            <Expense key={item.id} expenseItem={item} />
+          ))}
+      </React.Fragment>
+    ) : (
+      <h3>No recent expenses!!</h3>
+    );
+    const members = users ? (
       <React.Fragment>
         {users.map((item) => (
           <MemberList groupId={this.props.id} member={item} />
         ))}
       </React.Fragment>
+    ) : (
+      console.log("No Users")
     );
     let groupView = (
       <Container fluid>
@@ -85,8 +95,9 @@ class Group extends Component {
               <Link to={`/home/groups/${name}/${id}/exit`}>
                 <Button
                   variant="outline-danger"
+                  size="sm"
                   onClick={(e) => this.exitGroup(e)}
-                  disabled={this.state.balance !== 0 ? true : false}
+                  disabled={this.state.balance === 0 ? false : true}
                 >
                   Exit
                 </Button>
@@ -97,19 +108,25 @@ class Group extends Component {
             </Col>
             <Col>
               <Row className="float-right">
-                <Col>
+                <Col xs={4}>
                   <Link to={`/home/addMember/${name}/${id}`}>
-                    <Button variant="outline-primary">AddMember</Button>
+                    <Button variant="outline-primary" size="sm">
+                      AddMember
+                    </Button>
                   </Link>
                 </Col>
-                <Col>
+                <Col xs={4}>
                   <Link to={`/home/addExpense/${name}/${id}`}>
-                    <Button variant="outline-primary">AddExpense</Button>
+                    <Button variant="outline-primary" size="sm">
+                      AddExpense
+                    </Button>
                   </Link>
                 </Col>
-                <Col>
-                  <Link to={`/home/settle/${name}/${id}`}>
-                    <Button variant="outline-primary">SettleUp</Button>
+                <Col xs={4}>
+                  <Link to={`/home/settle/${name}/${id}/${membershipId}`}>
+                    <Button variant="outline-primary" size="sm">
+                      SettleUp
+                    </Button>
                   </Link>
                 </Col>
               </Row>

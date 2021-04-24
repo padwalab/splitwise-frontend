@@ -7,7 +7,6 @@ import NavBar from "./components/navbar";
 import Profile from "./components/profile";
 import Signin from "./components/signin";
 import NewGroup from "./components/newgroup";
-import LandingPage from "./components/landingPage";
 
 class App extends Component {
   render() {

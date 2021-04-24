@@ -18,9 +18,9 @@ class SideBar extends Component {
     filterText: "",
   };
   componentDidMount() {
-    fetch(`http://localhost:8000/api/groups/${this.props.currentUser.id}`)
+    fetch(`http://localhost:8000/users/${this.props.currentUser.id}/groups`)
       .then((res) => res.json())
-      .then((result) => this.setState({ groups: result }));
+      .then((result) => this.setState({ groups: result.groups }));
     console.log(this.state.expenses);
   }
 

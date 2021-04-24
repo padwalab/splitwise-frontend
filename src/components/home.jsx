@@ -16,8 +16,8 @@ import SettleUp from "./settleUp";
 class Home extends Component {
   render() {
     let homeContent = (
-      <Row className="md-auto">
-        <Col>
+      <Row>
+        <Col xs={3}>
           <SideBar />
         </Col>
         <Col xs={9}>
@@ -34,7 +34,7 @@ class Home extends Component {
           </Route>
           <Route path="/home/expenses/all" component={AllExpenses} />
           <Route path="/home/invitations" component={GroupInvitations} />
-          <Route path="/home/settle/:groupName/:id">
+          <Route path="/home/settle/:groupName/:id/:membershipId">
             <SettleUpExpense />
           </Route>
         </Col>
@@ -66,8 +66,8 @@ export function GroupAddMember() {
 }
 
 export function SettleUpExpense() {
-  let { groupName, id } = useParams();
-  return <SettleUp groupId={id} groupName={groupName} />;
+  let { groupName, id, membershipId } = useParams();
+  return (
+    <SettleUp groupId={id} groupName={groupName} membershipId={membershipId} />
+  );
 }
-
-

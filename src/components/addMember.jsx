@@ -16,18 +16,16 @@ class AddMember extends Component {
     e.preventDefault();
     console.log(this.state.name.split("::")[0], this.state.name.split("::")[2]);
     axios
-      .post(
-        `http://localhost:8000/api/groups/${this.props.groupId}/addmember`,
-        {
-          userId: this.state.name.split("::")[2],
-        }
-      )
+      .put(`http://localhost:8000/users/${this.props.groupId}/invite`, {
+        // done
+        email: this.state.name.split("::")[0],
+      })
       .then((result) => this.setState({ success: true }))
       .catch((error) => this.setState({ warning: true }));
   };
   userNames = [];
   componentDidMount() {
-    fetch(`http://localhost:8000/api/userlist`)
+    fetch(`http://localhost:8000/users/list`) // done
       .then((userLists) => userLists.json())
       .then((userList) =>
         userList.forEach((user) => {

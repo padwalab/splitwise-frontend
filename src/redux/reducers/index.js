@@ -68,16 +68,16 @@ export default function rootReducer(state = initState(), action) {
       };
 
     case actions.LOG_IN:
-      try {
-        const serializedState = JSON.stringify({
-          ...state,
-          currentUser: action.payload.content,
-          isLoggedIn: true,
-        });
-        localStorage.setItem("state", serializedState);
-      } catch {
-        // ignore write errors
-      }
+      // try {
+      //   const serializedState = JSON.stringify({
+      //     ...state,
+      //     currentUser: action.payload.content,
+      //     isLoggedIn: true,
+      //   });
+      //   localStorage.setItem("state", serializedState);
+      // } catch {
+      //   // ignore write errors
+      // }
       return {
         ...state,
         currentUser: action.payload.content,

@@ -13,18 +13,19 @@ class SettleUp extends Component {
   };
   userNames = [];
   componentDidMount() {
-    fetch(`http://localhost:8000/api/group/${this.props.groupId}`)
+    fetch(`http://localhost:8000/groups/${this.props.groupId}/memberships`)
       .then((userLists) => userLists.json())
       .then((userList) =>
-        userList.users.forEach((user) => {
-          this.userNames.push(user.email + "::" + user.name + "::" + user.id);
+        userList.members.forEach((user) => {
+          this.userNames.push(
+            user.member.email + "::" + user.member.name + "::" + user.id
+          );
         })
       );
     axios
-      .post(`http://localhost:8000/api/groups/userbalance`, {
-        userId: this.props.currentUser.id,
-        groupId: this.props.groupId,
-      })
+      .get(
+        `http://localhost:8000/membership/${this.props.membershipId}/balance`
+      )
       .then((result) => this.setState({ balance: result.data.share }));
     console.log(this.userNames, this.state.balance);
   }
@@ -33,11 +34,10 @@ class SettleUp extends Component {
     e.preventDefault();
     let memberId = this.state.member.split("::")[2];
     axios
-      .post(`http://localhost:8000/api/groups/${this.props.groupId}/settleup`, {
-        userId: this.props.currentUser.id,
-        payeeName: this.props.currentUser.name,
-        memberId: memberId,
-        payerName: this.state.member.split("::")[1],
+      .post(`http://localhost:8000/membership/settleup`, {
+        payerId: this.props.membershipId,
+        payeeId: memberId,
+        groupId: this.props.groupId,
         amount: this.state.amount,
       })
       .then((result) => {
@@ -56,8 +56,10 @@ class SettleUp extends Component {
     return (
       <Container className="w-75" fluid>
         <h2 className="font-weight-light border-bottom m-2">
-          :::Settle Up::: {this.props.groupName.toUpperCase()} You owe:
-          {this.state.balance}
+          :::Settle Up::: {this.props.groupName.toUpperCase()} <br />
+          {this.state.balance > 0
+            ? `:::You get back::: ${this.state.balance}`
+            : `:::You owe::: ${this.state.balance}`}
         </h2>
         {this.state.warning ? (
           <Alert variant="danger">Failed to settle up.</Alert>

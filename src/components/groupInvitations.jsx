@@ -11,31 +11,25 @@ class GroupInvitations extends Component {
   };
   componentDidMount() {
     axios
-      .get(
-        `http://localhost:8000/api/groups/${this.props.currentUser.id}/invitations`
-      )
+      .get(`http://localhost:8000/users/${this.props.currentUser.id}/invites`) // done
       .then((invitation) => {
-        this.setState({ invitations: invitation.data });
-        console.log(this.state, invitation.data);
+        console.log(invitation.data);
+        this.setState({ invitations: invitation.data.invites });
+        console.log(this.state, invitation.data.invites);
       });
   }
   render() {
-    const invites = (
-      <React.Fragment>
-        {this.state.invitations.map((item) => (
-          <Invitation key={item.groupId} groupId={item.groupId} />
-        ))}
-      </React.Fragment>
-    );
-    return (
-      <Container>
-        {this.state.invitations.length < 1 ? (
-          <React.Fragment>There are no pending invitations</React.Fragment>
-        ) : (
-          invites
-        )}
-      </Container>
-    );
+    const invites =
+      this.state.invitations.length > 0 ? (
+        <React.Fragment>
+          {this.state.invitations.map((item) => (
+            <Invitation key={item.id} groupId={item.id} />
+          ))}
+        </React.Fragment>
+      ) : (
+        <React.Fragment>There are no pending invitations</React.Fragment>
+      );
+    return <Container>{invites}</Container>;
   }
 }
 const mapStateToProps = (state) => state;

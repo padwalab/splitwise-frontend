@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Container, Row } from "react-bootstrap";
 import { connect } from "react-redux";
 import Expense from "./expense";
+import Payment from "./payment";
 
 class AllExpenses extends Component {
   state = {
@@ -9,49 +10,44 @@ class AllExpenses extends Component {
     payments: [],
   };
   componentDidMount() {
-    fetch(`http://localhost:8000/api/groups/${this.props.currentUser.id}`)
+    fetch(`http://localhost:8000/users/${this.props.currentUser.id}/groups`) // done
       .then((res) => res.json())
       .then((result) => {
         console.log(result);
-        result.forEach((group) => {
+        result.groups.forEach((group) => {
           this.setState({
             expenses: [
               ...this.state.expenses,
-              ...group.expenseItems,
-              ...group.payments,
+              ...group.expenses,
+              // ...group.payments, // take care of payments
             ],
+            payments: [...this.state.payments, ...group.payments],
           });
           console.log(this.state.expenses);
         });
       });
   }
   render() {
-    const expenses = (
-      <React.Fragment>
-        {this.state.expenses
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .map((item) => (
-            <Expense key={item.id} expenseItem={item} />
-          ))}
-      </React.Fragment>
-    );
-    const payments = (
-      <React.Fragment>
-        {this.state.payments
-          .sort((a, b) => new Date(a.createdAt) - new Date(a.createdAt))
-          .map((item) => (
-            <Row>
-              {item.payeeName} paid {item.payerName} ${item.amount}
-            </Row>
-          ))}
-      </React.Fragment>
-    );
+    const payments =
+      this.state.payments.length > 0 ? (
+        <React.Fragment>
+          {[...this.state.payments, ...this.state.expenses]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map((item) =>
+              item.name ? (
+                <Expense key={item.id} expenseItem={item} />
+              ) : (
+                <Payment key={item.id} paymentItem={item} />
+              )
+            )}
+        </React.Fragment>
+      ) : null;
     return (
       <Container fluid>
-        {this.state.expenses.length < 1 ? (
+        {this.state.payments.length < 1 ? (
           <h1 className="font-weight-light">No Recent Activity to display!!</h1>
         ) : (
-          expenses
+          payments
         )}
       </Container>
     );
