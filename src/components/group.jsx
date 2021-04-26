@@ -132,10 +132,12 @@ class Group extends Component {
               </Row>
             </Col>
           </Row>
-          <Col xs={9} className="float-left border-right">
-            <Row className="border-bottom m-2">{expenses}</Row>
-          </Col>
-          <Col className="border-right">{members}</Col>
+          <Row>
+            <Col xs={9} className="float-left border-right">
+              <Row className="border-bottom m-2">{expenses}</Row>
+            </Col>
+            <Col className="border-right">{members}</Col>
+          </Row>
         </Col>
       </Container>
     );
