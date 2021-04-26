@@ -1,6 +1,8 @@
 import axios from "axios";
+
 import React, { Component } from "react";
 import { Container, Row } from "react-bootstrap";
+import { connect } from "react-redux";
 
 class MemberList extends Component {
   state = {
@@ -9,7 +11,11 @@ class MemberList extends Component {
   };
   componentDidMount() {
     axios
-      .get(`http://localhost:8000/membership/${this.props.member.id}/balance`) //done
+      .get(`http://localhost:8000/membership/${this.props.member.id}/balance`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      }) //done
       .then((result) =>
         this.setState({
           userName: result.data.member.name,
@@ -23,7 +29,14 @@ class MemberList extends Component {
       this.props.member.id !== prevProps.member.id
     )
       axios
-        .get(`http://localhost:8000/membership/${this.props.member.id}/balance`) //done
+        .get(
+          `http://localhost:8000/membership/${this.props.member.id}/balance`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.props.currentUser.token}`,
+            },
+          }
+        ) //done
         .then((result) =>
           this.setState({
             userName: result.data.member.name,
@@ -47,5 +60,5 @@ class MemberList extends Component {
     );
   }
 }
-
-export default MemberList;
+const mapStateToProps = (state) => state;
+export default connect(mapStateToProps)(MemberList);

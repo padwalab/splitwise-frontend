@@ -21,8 +21,13 @@ class NewGroup extends Component {
   userNames = [];
   selectedNames = [];
   componentDidMount() {
-    fetch(`http://localhost:8000/api/userlist`)
-      .then((userLists) => userLists.json())
+    axios
+      .get(`http://localhost:8000/users/list`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      })
+      .then((userLists) => userLists.data)
       .then((userList) =>
         userList.forEach((user) => {
           this.userNames.push(user.name);
@@ -42,24 +47,43 @@ class NewGroup extends Component {
   handleCreateGroup = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8000/groups", {
-        //done
-        name: this.state.groupName,
-        userId: this.props.currentUser.id,
-      })
+      .post(
+        "http://localhost:8000/groups",
+        {
+          //done
+          name: this.state.groupName,
+          userId: this.props.currentUser.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
+      )
       .then((groupres) => {
         console.log("repsonse data: ", groupres.data);
         if (groupres.status === 201) {
           this.state.members.forEach((member) =>
             axios
-              .get(`http://localhost:8000/users/${member.email}/getId`) // this api is done
+              .get(`http://localhost:8000/users/${member.email}/getId`, {
+                headers: {
+                  Authorization: `Bearer ${this.props.currentUser.token}`,
+                },
+              }) // this api is done
               .then((memberres) => {
                 if (memberres.status === 200) {
                   console.log(memberres.data);
                   axios
                     .post(
                       `http://localhost:8000/users/${groupres.data.id}/invite`, // done
-                      { email: memberres.data.email }
+                      {
+                        email: memberres.data.email,
+                      },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${this.props.currentUser.token}`,
+                        },
+                      }
                     )
                     .then((res) => {
                       console.log(res);
@@ -73,11 +97,19 @@ class NewGroup extends Component {
     // this v api is done
     axios
       .get(
-        `http://localhost:8000/users/${this.props.currentUser.email}/details` // this is done
+        `http://localhost:8000/users/${this.props.currentUser.email}/details`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        } // this is done
       )
       .then((user) => {
         this.setState({ success: true });
-        this.props.updateUser({ ...user.data });
+        this.props.updateUser({
+          ...user.data,
+          token: this.props.currentUser.token,
+        });
         <Redirect to="/home/dashboard" />;
       })
       .catch((error) => {

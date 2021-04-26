@@ -17,15 +17,28 @@ class AddExpense extends Component {
     console.log("handling the add expesnse", this.props.currentUser.id);
 
     axios
-      .post(`http://localhost:8000/expense/${this.props.groupId}/add`, {
-        //done
-        ...this.state,
-      })
+      .post(
+        `http://localhost:8000/expense/${this.props.groupId}/add`,
+        {
+          //done
+          ...this.state,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           console.log("add expense successfull");
-          fetch(`http://localhost:8000/groups/${this.props.groupId}/members`) // done
-            .then((res) => res.json())
+          axios
+            .get(`http://localhost:8000/groups/${this.props.groupId}/members`, {
+              headers: {
+                Authorization: `Bearer ${this.props.currentUser.token}`,
+              },
+            }) // done
+            .then((res) => res.data)
             .then((result) => {
               console.log(result.members.length);
               result.members.forEach((member) => {
@@ -48,12 +61,20 @@ class AddExpense extends Component {
                     this.state.amount / result.members.length
                   );
                   axios
-                    .post(`http://localhost:8000/membership/${member.id}/add`, {
-                      //done
-                      // groupId: `${this.props.groupId}`,
-                      // userId: `${member.userId}`,
-                      share: share === 0 ? 0 : share,
-                    })
+                    .post(
+                      `http://localhost:8000/membership/${member.id}/add`,
+                      {
+                        //done
+                        // groupId: `${this.props.groupId}`,
+                        // userId: `${member.userId}`,
+                        share: share === 0 ? 0 : share,
+                      },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${this.props.currentUser.token}`,
+                        },
+                      }
+                    )
                     .then((result) => {
                       if (result.status === 200) {
                         console.log("add share successful", result);
@@ -71,10 +92,18 @@ class AddExpense extends Component {
                     -(this.state.amount / result.members.length)
                   );
                   axios
-                    .post(`http://localhost:8000/membership/${member.id}/add`, {
-                      //done
-                      share: -+(this.state.amount / result.members.length),
-                    })
+                    .post(
+                      `http://localhost:8000/membership/${member.id}/add`,
+                      {
+                        //done
+                        share: -+(this.state.amount / result.members.length),
+                      },
+                      {
+                        headers: {
+                          Authorization: `Bearer ${this.props.currentUser.token}`,
+                        },
+                      }
+                    )
                     .then((result) => {
                       if (result.status === 200) {
                         this.setState({ success: true });

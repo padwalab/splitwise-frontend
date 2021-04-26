@@ -46,7 +46,11 @@ class DashBoard extends Component {
   };
   componentDidMount() {
     axios
-      .get(`http://localhost:8000/users/${this.props.currentUser.id}/groups`)
+      .get(`http://localhost:8000/users/${this.props.currentUser.id}/groups`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      })
       .then((res) => {
         console.log(res);
         res.data.groups.forEach((group) => {

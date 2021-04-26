@@ -56,6 +56,11 @@ class Expense extends Component {
           {
             note: this.state.comment,
             userId: this.props.currentUser.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.props.currentUser.token}`,
+            },
           }
         )
         .then((res) => {

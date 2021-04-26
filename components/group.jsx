@@ -16,8 +16,13 @@ class Group extends Component {
     membershipId: "",
   };
   componentDidMount() {
-    fetch(`http://localhost:8000/groups/${this.props.id}`) //done
-      .then((res) => res.json())
+    axios
+      .get(`http://localhost:8000/groups/${this.props.id}`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      }) //done
+      .then((res) => res.data)
       .then((result) => {
         this.setState({
           id: result.id,
@@ -42,8 +47,13 @@ class Group extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.id !== prevProps.id) {
-      fetch(`http://localhost:8000/groups/${this.props.id}`) // done
-        .then((res) => res.json())
+      axios
+        .get(`http://localhost:8000/groups/${this.props.id}`, {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }) // done
+        .then((res) => res.data)
         .then((result) =>
           this.setState({
             id: result.id,
@@ -57,11 +67,19 @@ class Group extends Component {
   exitGroup = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:8000/membership/${this.state.membershipId}/exit`, {
-        //done
-        userId: this.props.currentUser.id,
-        groupId: this.state.id,
-      })
+      .put(
+        `http://localhost:8000/membership/${this.state.membershipId}/exit`,
+        {
+          //done
+          userId: this.props.currentUser.id,
+          groupId: this.state.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
+      )
       .then((result) => <Redirect to="/home/dashboard" />)
       .catch((error) => console.log(error));
   };

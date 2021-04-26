@@ -11,7 +11,11 @@ class GroupInvitations extends Component {
   };
   componentDidMount() {
     axios
-      .get(`http://localhost:8000/users/${this.props.currentUser.id}/invites`) // done
+      .get(`http://localhost:8000/users/${this.props.currentUser.id}/invites`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      }) // done
       .then((invitation) => {
         console.log(invitation.data);
         this.setState({ invitations: invitation.data.invites });

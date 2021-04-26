@@ -11,6 +11,7 @@ import {
 import { FacebookIcon, TwitterIcon } from "react-share";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import axios from "axios";
 
 class SideBar extends Component {
   state = {
@@ -18,9 +19,14 @@ class SideBar extends Component {
     filterText: "",
   };
   componentDidMount() {
-    fetch(`http://localhost:8000/users/${this.props.currentUser.id}/groups`)
-      .then((res) => res.json())
-      .then((result) => this.setState({ groups: result.groups }));
+    axios
+      .get(`http://localhost:8000/users/${this.props.currentUser.id}/groups`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      })
+      // .then((res) => res.json())
+      .then((result) => this.setState({ groups: result.data.groups }));
     console.log(this.state.expenses);
   }
 

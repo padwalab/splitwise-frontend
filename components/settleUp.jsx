@@ -13,8 +13,13 @@ class SettleUp extends Component {
   };
   userNames = [];
   componentDidMount() {
-    fetch(`http://localhost:8000/groups/${this.props.groupId}/memberships`)
-      .then((userLists) => userLists.json())
+    axios
+      .get(`http://localhost:8000/groups/${this.props.groupId}/memberships`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      })
+      .then((userLists) => userLists.data)
       .then((userList) =>
         userList.members.forEach((user) => {
           this.userNames.push(
@@ -24,7 +29,12 @@ class SettleUp extends Component {
       );
     axios
       .get(
-        `http://localhost:8000/membership/${this.props.membershipId}/balance`
+        `http://localhost:8000/membership/${this.props.membershipId}/balance`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
       )
       .then((result) => this.setState({ balance: result.data.share }));
     console.log(this.userNames, this.state.balance);
@@ -34,12 +44,20 @@ class SettleUp extends Component {
     e.preventDefault();
     let memberId = this.state.member.split("::")[2];
     axios
-      .post(`http://localhost:8000/membership/settleup`, {
-        payerId: this.props.membershipId,
-        payeeId: memberId,
-        groupId: this.props.groupId,
-        amount: this.state.amount,
-      })
+      .post(
+        `http://localhost:8000/membership/settleup`,
+        {
+          payerId: this.props.membershipId,
+          payeeId: memberId,
+          groupId: this.props.groupId,
+          amount: this.state.amount,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
+      )
       .then((result) => {
         if (result.status === 200) {
           this.setState({ success: true });

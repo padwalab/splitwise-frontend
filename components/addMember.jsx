@@ -15,20 +15,35 @@ class AddMember extends Component {
   handleAddMember = async (e) => {
     e.preventDefault();
     console.log(this.state.name.split("::")[0], this.state.name.split("::")[2]);
+
     axios
-      .put(`http://localhost:8000/users/${this.props.groupId}/invite`, {
-        // done
-        email: this.state.name.split("::")[0],
-      })
+      .put(
+        `http://localhost:8000/users/${this.props.groupId}/invite`,
+        {
+          // done
+
+          email: this.state.name.split("::")[0],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
+      )
       .then((result) => this.setState({ success: true }))
       .catch((error) => this.setState({ warning: true }));
   };
   userNames = [];
   componentDidMount() {
-    fetch(`http://localhost:8000/users/list`) // done
-      .then((userLists) => userLists.json())
+    axios
+      .get(`http://localhost:8000/users/list`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      }) // done
+      // .then((userLists) => userLists.json())
       .then((userList) =>
-        userList.forEach((user) => {
+        userList.data.forEach((user) => {
           this.userNames.push(user.email + "::" + user.name + "::" + user.id);
         })
       );

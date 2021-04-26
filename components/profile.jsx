@@ -10,7 +10,9 @@ class Profile extends Component {
     name: this.props.currentUser.name,
     email: this.props.currentUser.email,
     password: this.props.currentUser.password,
-    profile_photo: this.props.currentUser.profile_photo,
+    profile_photo: this.props.currentUser.profile_photo
+      ? this.props.currentUser.profile_photo
+      : null,
     phone: this.props.currentUser.phone,
     default_currency: this.props.currentUser.default_currency,
     time_zone: this.props.currentUser.time_zome,
@@ -58,14 +60,26 @@ class Profile extends Component {
     delete cloneState.success;
     delete cloneState.warning;
     axios
-      .put(`http://localhost:8000/users/${this.state.email}/update`, {
-        //done
-        ...cloneState,
-      })
+      .put(
+        `http://localhost:8000/users/${this.state.email}/update`,
+        {
+          //done
+
+          ...cloneState,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
+      )
       .then((res) => {
         console.log("repsonse data: ", res.data);
         this.setState({ success: true });
-        this.props.updateUser(res.data);
+        this.props.updateUser({
+          ...res.data,
+          token: this.props.currentUser.token,
+        });
       })
       .catch((error) => {
         console.log(error);

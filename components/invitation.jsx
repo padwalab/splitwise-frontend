@@ -13,16 +13,29 @@ class Invitation extends Component {
   };
   componentDidMount() {
     axios
-      .get(`http://localhost:8000/groups/${this.props.groupId}`) //done
+      .get(`http://localhost:8000/groups/${this.props.groupId}`, {
+        headers: {
+          Authorization: `Bearer ${this.props.currentUser.token}`,
+        },
+      }) //done
       .then((result) => this.setState({ groupName: result.data.name }));
   }
   handleAcceptInvitation = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:8000/users/${this.props.groupId}/accept`, {
-        //done
-        userId: this.props.currentUser.id,
-      })
+      .put(
+        `http://localhost:8000/users/${this.props.groupId}/accept`,
+        {
+          //done
+
+          userId: this.props.currentUser.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.props.currentUser.token}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           console.log("invitation accepted");

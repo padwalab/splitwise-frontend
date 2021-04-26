@@ -27,7 +27,7 @@ class Login extends Component {
       .then((res) => {
         console.log("repsonse data: ", res.data);
         if (res.status === 200) {
-          this.props.logInUser(res.data);
+          this.props.logInUser({ ...res.data.user, token: res.data.token });
         }
       })
       .catch((error) => this.setState({ warning: true }));
